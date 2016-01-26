@@ -4,8 +4,8 @@
  * division by a scalar, scalar product, vector product, magnitude, 
  *and magnitude squared as well as a toString() method
  *
- *@author Cai .W.John
- *@author Michael .O'Shea
+ *@author Cai Williams John
+ *@author Michael John Harry O'Shea
  */
 
 
