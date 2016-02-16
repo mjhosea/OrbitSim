@@ -268,30 +268,33 @@ public class Particle3d {
      *
      *@return Vector3d object representing Gravitational force
      */
+ public static Vector3d forceCalc(Particle3d centre, Particle3d[] other){
+	Vector3d force= new Vector3d();
 
+	for (int i = 0 ; i < other.length ; i ++){ 
 
-    public static Vector3d forceCalc(Particle3d centre, Particle3d orbit){
-
-	double G=0.0;
-
-	G =1.0;  //6.674E-11;
+	double G=1.0; //6.674E-11;
 
         double magsep=0.0;
 
 	Vector3d sep= new Vector3d();
 	
 	Vector3d numerator= new Vector3d();
-
-	sep = Particle3d.seperation(centre,orbit);
-
+	
+	sep = Particle3d.seperation(centre,other[i]);
+	
 	magsep = sep.mag();
-
-	numerator= unitHat(sep).scalarMultiply(centre.getMass()*orbit.getMass()*-1.0*G);
-
-      
-	return  (numerator.scalarDivide(magsep*magsep));
-		 }
+	
+	numerator= unitHat(sep).scalarMultiply(centre.getMass()*other[i].getMass()*-1.0*G);
+	
+	numerator.scalarDivide(magsep*magsep);
+	
+	force= Vector3d.addVector(numerator, force);
+	}
+	
+	return  (force);
+ }
     
-
-
+    
+    
 }
