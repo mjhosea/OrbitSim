@@ -66,9 +66,9 @@ public class Particle3dVerlet {
 
 	//Create particle from central file
 
-	Particle3d mid = new Particle3d();
+	Particle3d[] mid = new Particle3d[1];
 
-        mid = Particle3d.readParticle(verletScan);
+        mid[0] = Particle3d.readParticle(verletScan);
 
 	Particle3d orbit = new Particle3d();
 
@@ -103,7 +103,7 @@ public class Particle3dVerlet {
 	positionOutput.printf("%10.5f %10.5f\n", posPrint.getX(), posPrint.getY());
 
 	//print initial total energy to energy file
-	double totalE= orbit.kineticEnergy() + orbit.potentialEnergy(mid);
+	double totalE= orbit.kineticEnergy() + orbit.potentialEnergy(mid[0]);
 
 	energyOutput.printf("%10.5f %10.7f\n", t, totalE);
 
@@ -137,7 +137,7 @@ public class Particle3dVerlet {
             positionOutput.printf("%10.5f %10.5f\n", posPrint.getX(), posPrint.getY());
 
 	    //Calculate total energy
-	    totalE = orbit.kineticEnergy() + orbit.potentialEnergy(mid);
+	    totalE = orbit.kineticEnergy() + orbit.potentialEnergy(mid[0]);
 
 	    //Print the total energy to file
 	    energyOutput.printf("%10.5f %10.7f\n", t, totalE);

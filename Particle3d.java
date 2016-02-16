@@ -268,6 +268,7 @@ public class Particle3d {
      *
      *@return Vector3d object representing Gravitational force
      */
+    
  public static Vector3d forceCalc(Particle3d centre, Particle3d[] other){
 	Vector3d force= new Vector3d();
 
