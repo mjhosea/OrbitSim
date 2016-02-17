@@ -264,37 +264,39 @@ public class Particle3d {
      *
      *@param centre a Particle3d object for source of Gravitational potential energy
      *@param orbit a Particle3d object for target of Gravitational potential energy
-     *
+     *@param skip an int to skip calculating force of particle due to itself
      *
      *@return Vector3d object representing Gravitational force
      */
     
- public static Vector3d forceCalc(Particle3d centre, Particle3d[] other){
+    public static Vector3d forceCalc(Particle3d centre, Particle3d[] other, int skip){
+
 	Vector3d force= new Vector3d();
-
-	for (int i = 0 ; i < other.length ; i ++){ 
-
-	double G=1.0; //6.674E-11;
-
-        double magsep=0.0;
-
+       	double G=1.0; //6.674E-11;
+	double magsep=0.0;
 	Vector3d sep= new Vector3d();
-	
 	Vector3d numerator= new Vector3d();
 	
-	sep = Particle3d.seperation(centre,other[i]);
 	
-	magsep = sep.mag();
-	
-	numerator= unitHat(sep).scalarMultiply(centre.getMass()*other[i].getMass()*-1.0*G);
-	
-	numerator.scalarDivide(magsep*magsep);
+	for (int i = 0 ; i < other.length ; i ++){ 
+
+	    //skips index if it is index of centre particle
+	    if (i ==skip){
+		i+=i;}
+	    
+	    sep = Particle3d.seperation(centre,other[i]);
+	    
+	    magsep = sep.mag();
+	    
+	    numerator= unitHat(sep).scalarMultiply(centre.getMass()*other[i].getMass()*-1.0*G);
+	    
+	    numerator.scalarDivide(magsep*magsep);
 	
 	force= Vector3d.addVector(numerator, force);
 	}
 	
 	return  (force);
- }
+    }
     
     
     
