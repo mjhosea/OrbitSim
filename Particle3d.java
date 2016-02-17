@@ -264,7 +264,7 @@ public class Particle3d {
      *
      *@param centre a Particle3d object for source of Gravitational potential energy
      *@param orbit a Particle3d object for target of Gravitational potential energy
-     *@param skip an int to skip calculating force of particle due to itself
+     *@param skip an int used to skip calculating force of particle due to itself
      *
      *@return Vector3d object representing Gravitational force
      */
@@ -281,6 +281,7 @@ public class Particle3d {
 	for (int i = 0 ; i < other.length ; i ++){ 
 
 	    //skips index if it is index of centre particle
+	    
 	    if (i ==skip){
 		i+=i;}
 	    
