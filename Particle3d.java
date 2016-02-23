@@ -152,13 +152,12 @@ public class Particle3d {
 
     public void leapPosition(double dt, Vector3d force){
 	Vector3d acceleration= new Vector3d();
-
+	
 	acceleration= force.scalarDivide(mass);
 
 	position= Vector3d.addVector(Vector3d.addVector(position, velocity.scalarMultiply(dt)), acceleration.scalarMultiply(0.5*dt*dt));
 
     }
-    
 
      /** Returns the kinetic energy of a Particle3d,
      * calculated as 1/2*m*v^2. Where v, is the magnitude of the
@@ -167,7 +166,7 @@ public class Particle3d {
      * @return a double that is the kinetic energy.
      */
     
-    public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
+public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
 
 
     /** Method to calculate Gravitational Potential energy of two particles
@@ -269,33 +268,36 @@ public class Particle3d {
      *@return Vector3d object representing Gravitational force
      */
     
-    public static Vector3d forceCalc(Particle3d centre, Particle3d[] other, int skip){
+    public static Vector3d[] forceCalc(Particle3d[] particles){
 
-	Vector3d force= new Vector3d();
+	Vector3d[] force= new Vector3d[particles.length];
+	for(int i=0; i<particles.length; i++){
+	    force[i]= new Vector3d();
+	}
+
        	double G=1.0; //6.674E-11;
 	double magsep=0.0;
 	Vector3d sep= new Vector3d();
-	Vector3d numerator= new Vector3d();
+	Vector3d newForce= new Vector3d();
 	
 	
-	for (int i = 0 ; i < other.length ; i ++){ 
+	for (int i = 0 ; i < particles.length ; i ++){ 
 
-	    //skips index if it is index of centre particle
-	    
-	    if (i ==skip){
-		i+=i;}
-	    
-	    sep = Particle3d.seperation(centre,other[i]);
-	    
+	    for(int j=i+1; j<particles.length; j++){
+	      
+	    sep = Particle3d.seperation(particles[i],particles[j]);
+
 	    magsep = sep.mag();
 	    
-	    numerator= unitHat(sep).scalarMultiply(centre.getMass()*other[i].getMass()*-1.0*G);
+	    newForce= unitHat(sep).scalarMultiply(particles[i].getMass()*particles[j].getMass()*-1.0*G);
 	    
-	    numerator.scalarDivide(magsep*magsep);
-	
-	force= Vector3d.addVector(numerator, force);
+	    newForce= newForce.scalarDivide(magsep*magsep);
+
+	force[i]= Vector3d.addVector(newForce, force[i]);
+	force[j]= Vector3d.addVector(newForce.scalarMultiply(-1),force[j]);
+	   
+	    }
 	}
-	
 	return  (force);
     }
     

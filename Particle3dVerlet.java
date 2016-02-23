@@ -66,20 +66,29 @@ public class Particle3dVerlet {
 
 	//Create particle from central file
 
-	Particle3d[] mid = new Particle3d[1];
+	Particle3d[] mid = new Particle3d[2];
+	
+	for(int i=0;i<mid.length;i++){
+	    mid[i]= new Particle3d();
+	}
 
         mid[0] = Particle3d.readParticle(verletScan);
 
-	Particle3d orbit = new Particle3d();
-
-	orbit = Particle3d.readParticle(verletScan);
+	mid[1] = Particle3d.readParticle(verletScan);
 
 
 	//Calculate initial force
 
-	Vector3d force = new Vector3d();
+	Vector3d[] force = new Vector3d[mid.length];
+	
+	for(int i=0; i<mid.length; i++){
+	    force[i]= new Vector3d();
+	}
 
-	force = Particle3d.forceCalc(orbit, mid); //points from central to orbit
+	force = Particle3d.forceCalc(mid); //points from central to orbit
+	
+	System.out.println(force[0]);
+	System.out.println(force[1]);
 
 	//Number of timesteps
 	int numstep = Integer.parseInt(argv[2]);
@@ -98,12 +107,12 @@ public class Particle3dVerlet {
 
 
 	//print initial state to position file
-	Vector3d posPrint= new Vector3d(orbit.getPosition());
+	Vector3d posPrint= new Vector3d(mid[1].getPosition());
 
 	positionOutput.printf("%10.5f %10.5f\n", posPrint.getX(), posPrint.getY());
 
 	//print initial total energy to energy file
-	double totalE= orbit.kineticEnergy() + orbit.potentialEnergy(mid[0]);
+	double totalE= mid[1].kineticEnergy() + mid[1].potentialEnergy(mid[0]);
 
 	energyOutput.printf("%10.5f %10.7f\n", t, totalE);
 
@@ -111,17 +120,21 @@ public class Particle3dVerlet {
 	
 	    // Update the postion using current velocity and force
 	    
-	    orbit.leapPosition(dt, force);
+	    mid[1].leapPosition(dt, force[1]);
 	    
 	    // Update forces based on new position
 
-	    Vector3d force_new = new Vector3d();
+	    Vector3d[] force_new = new Vector3d[mid.length];
 	    
-	    force_new= Particle3d.forceCalc(orbit, mid);
+	    for(int j= 0; j<mid.length; j++){
+		force_new[j]= new Vector3d();
+	    }
+
+	    force_new= Particle3d.forceCalc(mid);
 
 	    // Update velocity based on average of current and new force
 	    
-	    orbit.leapVelocity(dt,Vector3d.addVector(force, force_new).scalarMultiply(0.5));
+	    mid[1].leapVelocity(dt,Vector3d.addVector(force[1], force_new[1]).scalarMultiply(0.5));
 
 	    // Set current force to new force
 
@@ -131,13 +144,13 @@ public class Particle3dVerlet {
             t = t + dt;
 
 	    //Create vector to assist position printing
-	     posPrint= orbit.getPosition();
+	     posPrint= mid[1].getPosition();
  		
 	    //Print the current position to file
             positionOutput.printf("%10.5f %10.5f\n", posPrint.getX(), posPrint.getY());
 
 	    //Calculate total energy
-	    totalE = orbit.kineticEnergy() + orbit.potentialEnergy(mid[0]);
+	    totalE = mid[1].kineticEnergy() + mid[1].potentialEnergy(mid[0]);
 
 	    //Print the total energy to file
 	    energyOutput.printf("%10.5f %10.7f\n", t, totalE);
