@@ -7,11 +7,6 @@
  * bodies in the solar system.
  *
  *
- *
- *
- *
- *
- *
  *@author C. John
  *@author M. O'Shea
  *@version "02/2016"
@@ -22,17 +17,24 @@ import java.io.*;
 import java.util.Scanner;
 
 
-
-public static toVMD(Particle3d[] print, String file){
-
+public class OrbitSim {
 
 
 
+public static void toVMD(Particle3d[] myParticle3d, PrintWriter outfile) {
+
+    
+    outfile.printf("%d\n" ,myParticle3d.length);
+    outfile.printf("Point = %d\n" , numstep);
+       
+    for (int i=0; i < myParticle3d.length; i++) {
+       
+    outfile.printf("%s\n", myParticle3d[i].toString());
+
+   }
+    outfile.flush();
 }
 
-
-
-public class OrbitSim {
 
 
       /**
@@ -47,4 +49,26 @@ x     */
 
     // We are using file IO so we are throwing an exception
 
+    //the input file for 
+
     public static void main (String[] argv) throws IOException{
+
+
+        PrintWriter arrayPositions = new PrintWriter(new FileWriter("outPositions"));
+
+	int length = 2; //or whaterver
+
+	Particle3d[] myParticle3d = new Particle3d[length];
+
+        BufferedReader orbitSimRead = new BufferedReader(new FileReader("orbitSim.input"));
+
+        Scanner orbitSimScan= new Scanner(orbitSimRead);
+
+        for (int i=0; i < myParticle3d.length; i++) {
+
+        myParticle3d[i] = Particle3d.readParticle(orbitSimScan);
+
+	}
+	toVMD(myParticle3d, arrayPositions); //call this at the end of each time step 
+    }
+}
