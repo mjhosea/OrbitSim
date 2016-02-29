@@ -259,30 +259,35 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
 	return( a.scalarDivide(mag));
 	    }
 
+    
+
     /** Method to calculate the Gravitational force between two particles
      *
-     *@param centre a Particle3d object for source of Gravitational potential energy
-     *@param orbit a Particle3d object for target of Gravitational potential energy
-     *@param skip an int used to skip calculating force of particle due to itself
+     *@param particles an array of  Particle3d objects to calculate the gravitational force for
      *
-     *@return Vector3d object representing Gravitational force
+     *@return Vector3d[] array containing the Gravitational force of all particles in the system
      */
     
     public static Vector3d[] forceCalc(Particle3d[] particles){
 
+	//Declare and initialize all objects
 	Vector3d[] force= new Vector3d[particles.length];
 	for(int i=0; i<particles.length; i++){
 	    force[i]= new Vector3d();
 	}
-
        	double G=1.0; //6.674E-11;
 	double magsep=0.0;
 	Vector3d sep= new Vector3d();
 	Vector3d newForce= new Vector3d();
-	
+
+
+	//Loop to cycle through all particles in array
 	
 	for (int i = 0 ; i < particles.length ; i ++){ 
 
+
+	    //Loop to calculate force between current particle and all others
+	    
 	    for(int j=i+1; j<particles.length; j++){
 	      
 	    sep = Particle3d.seperation(particles[i],particles[j]);
@@ -293,6 +298,8 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
 	    
 	    newForce= newForce.scalarDivide(magsep*magsep);
 
+	    //sum the current force with previous and save the opposite force in
+	    //correct index to eliminate weight of calculations
 	force[i]= Vector3d.addVector(newForce, force[i]);
 	force[j]= Vector3d.addVector(newForce.scalarMultiply(-1),force[j]);
 	   
