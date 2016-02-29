@@ -178,13 +178,30 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
      */
 
 
-    public double potentialEnergy(Particle3d centre){
+    public static double[] potentialEnergy(Particle3d[] particles){
+
+	double G=1.0; //6.674E-11;
+	double[] potential= new double[particles.length];
 	
-	Vector3d sep= new Vector3d(seperation(centre, this));
+	//Loop to cycle through particles for energy calculation
+	for(int i=0;i<particles.length;i++){
+	   
+	    //Loop to calculate P.E. for particle w.r.t. all others
+	    for(int j=i+1;j<particles.length;j++){
+		
+		//calculates separation from i to j
 
-	double U=(-1.0*this.getMass()*centre.getMass())/sep.mag();
+		Vector3d sep= new Vector3d(seperation(particles[i],particles[j]));
+		
+		//calculate P.E. from i to j
+		double U=(-G*particles[i].getMass()*particles[j].getMass())/sep.mag();
 
-	return U;
+		potential[i]+= U;
+		potential[j]+= -1.0*U;
+	    }
+	}
+	
+	return potential;
     }
 	
 
@@ -236,6 +253,8 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
      *@return a Vector3d object representing the relative seperation
      */ 
 
+    // creates position vector pointing from centre to orbit
+
   public static  Vector3d seperation(Particle3d centre, Particle3d orbit){
 
 	return new Vector3d( Vector3d.subVector(centre.getPosition(), orbit.getPosition()));
@@ -263,7 +282,7 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
 
     /** Method to calculate the Gravitational force between two particles
      *
-     *@param particles an array of  Particle3d objects to calculate the gravitational force for
+     *@param particles an array of  Particle3d objects to calculate the gravitational force of
      *
      *@return Vector3d[] array containing the Gravitational force of all particles in the system
      */

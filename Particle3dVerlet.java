@@ -100,8 +100,21 @@ public class Particle3dVerlet {
 	double t= 0.0;
 
 
-	//================================================================
+	//Test to see if new P.E. method works for arrays
 
+	double[] potentialE= new double[2];
+
+	potentialE= Particle3d.potentialEnergy(mid);
+
+	
+	System.out.println(potentialE[0]);
+	System.out.println(potentialE[1]);
+
+
+
+
+	//================================================================
+	/*
 
 	// Start of the velocity Verlet algorithm
 
@@ -156,7 +169,7 @@ public class Particle3dVerlet {
 	    energyOutput.printf("%10.5f %10.7f\n", t, totalE);
 
 
-	}
+	    }*/
 	// Close the output file
 	positionOutput.close();
 	
