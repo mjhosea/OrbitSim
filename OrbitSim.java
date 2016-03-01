@@ -37,15 +37,14 @@ public static void toVMD(Particle3d[] myParticle3d, PrintWriter outfile) {
 
 
 
-      /**
+     /**
      * Main method to run OrbitSim class.
      *
-     *@param argv[0] name of the output file for position.
-     *@param argv[1] name of the output file for the total energy
-     *@param argv[2] number of timesteps for time integration
-     *@param argv[3] size of each timestep
+     *@param argv[0] initial state of the particles.
+     *@param argv[1] values of the parameters
+     *@param argv[2] name of of the output trajectory file for the VMD
      *
-x     */
+     */
 
     // We are using file IO so we are throwing an exception
 
@@ -64,9 +63,14 @@ x     */
 
         Scanner orbitSimScan= new Scanner(orbitSimRead);
 
+
+	//start of the main loop// 
+
         for (int i=0; i < myParticle3d.length; i++) {
 
         myParticle3d[i] = Particle3d.readParticle(orbitSimScan);
+
+
 
 	}
 	toVMD(myParticle3d, arrayPositions); //call this at the end of each time step 
