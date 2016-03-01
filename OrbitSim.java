@@ -21,15 +21,15 @@ public class OrbitSim {
 
 
 
-public static void toVMD(Particle3d[] myParticle3d, PrintWriter outfile) {
+public static void toVMD(Particle3d[] particles, PrintWriter outfile) {
 
     
-    outfile.printf("%d\n" ,myParticle3d.length);
+    outfile.printf("%d\n" ,particles.length);
     outfile.printf("Point = %d\n" , numstep);
        
-    for (int i=0; i < myParticle3d.length; i++) {
+    for (int i=0; i < particles.length; i++) {
        
-    outfile.printf("%s\n", myParticle3d[i].toString());
+    outfile.printf("%s\n", particles[i].toString());
 
    }
     outfile.flush();
@@ -57,22 +57,56 @@ public static void toVMD(Particle3d[] myParticle3d, PrintWriter outfile) {
 
 	int length = 2; //or whaterver
 
-	Particle3d[] myParticle3d = new Particle3d[length];
+	Particle3d[] particles = new Particle3d[length];
 
         BufferedReader orbitSimRead = new BufferedReader(new FileReader("orbitSim.input"));
 
         Scanner orbitSimScan= new Scanner(orbitSimRead);
 
 
-	//start of the main loop// 
+		//start of the main loop// 
 
-        for (int i=0; i < myParticle3d.length; i++) {
+	//Read in particle of intrest
+		particles[i] = Particle3d.readParticle(orbitSimScan);
 
-        myParticle3d[i] = Particle3d.readParticle(orbitSimScan);
+		Vector3d[] force = Particle3d.forceCalc(particles);
+
+	//Loop for each time step 
+	for (int i=0; i<numstep; i++){
 
 
+	    //Leap position of all particles due to current peerwise forces
+	    for (int i=0; i <particles.length; i++) {
 
-	}
+        
+
+	    //Leap position of particle of intrest
+      	    Particle3d.leapPosition(dt, force, particles);
+		
+	    }
+
+	   
+	    //calculate the new peerwise forces
+
+	    Vector3d[] force_new = new Vector3d[paticles.length]; 
+
+	    force_new = Particle3d.forceCalc(particles);
+
+
+	    for (int i=0; i <myParticle3d.length; i++){
+
+	    Particle3d.leapVelocity(dt, force_new, particles);
+
+	    force = new_force; //Could cause issues (becasue we are equating memory adresses not values) 
+
+	   
+
+      	}
+
+	    t = t + dt
+
 	toVMD(myParticle3d, arrayPositions); //call this at the end of each time step 
+    }
+
     }
 }

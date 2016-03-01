@@ -159,8 +159,6 @@ public class Particle3d {
 
     Vector3d acceleration = new Vector3d();
 
-    
-
    //Loop to cycle through all particles in array
     
     for (int i = 0 ; i < particles.length ; i ++){
@@ -176,9 +174,6 @@ public class Particle3d {
       }
 
  }
-
-
-
 
    /** Time integration support: evolve the velocity
     * according to dv = f/m * dt.
@@ -202,12 +197,7 @@ public class Particle3d {
       }
 
 
-      }
-
-
-
-
-
+ }
 
 
      /** Returns the kinetic energy of a Particle3d,
@@ -218,6 +208,20 @@ public class Particle3d {
      */
     
 public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
+
+
+public static double totalKineticEnergy(Particle3d[] particles){
+	
+    double sum = 0; 
+
+    for(int i=0;i<particles.length;i++){
+
+	sum += particles[i].kineticEnergy();
+    }
+
+    return  sum;
+}
+
 
 
     /** Method to calculate Gravitational Potential energy of two particles
