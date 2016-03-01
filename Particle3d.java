@@ -144,15 +144,12 @@ public class Particle3d {
 
 
 
-
-
-
     /** Time integration support: evolve the position
      * according to dx = x + v * dt + 0.5 * a * dt^2.
      *
      * @param dt a double that is the timestep.
-     * @param force an array of vectors that store the current force.
-     * @param particles that is an array of Particle3d
+     * @param force an array of vectors that stores the current force.
+     * @param particles that is an array of Particle3d objects.
      */
 
 
@@ -178,12 +175,12 @@ public class Particle3d {
 
 
 
-
    /** Time integration support: evolve the velocity
     * according to dv = f/m * dt.
     *
     * @param dt a double that is the timestep.
-    * @param force a Vector3d that is the current force on the particle.
+    * @param force an array of vectors that stores the current force.
+    * @param particles that is an array of Particle3d objects.
     */
    
     public static void leapVelocity(double  dt, Vector3d[] force, Particle3d[] particles) {
@@ -198,10 +195,8 @@ public class Particle3d {
     	 acceleration = force[i].scalarDivide(particles[i].getMass());
     	 particles[i].setVelocity( Vector3d.addVector(particles[i].getVelocity(), acceleration.scalarMultiply(dt)));
         
-      }
-
-
-      }
+	}
+    }
 
 
 
@@ -217,21 +212,23 @@ public class Particle3d {
 public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
 
 
+    /* ******************************************
+     * Static Methods
+     ********************************************/
+
     /** Method to calculate Gravitational Potential energy of two particles
      *
-     *@param centre a Particle3d object to calculate potential energy from
+     *@param particles an array of Particle3d objects containing all particles in the system.
      *
-
-
      *
-     *@return a double that is the potential energy
+     *@return a double that is the potential energy of the system.
      */
 
 
-    public static double[] potentialEnergy(Particle3d[] particles){
+    public static double potentialEnergy(Particle3d[] particles){
 
 	double G=1.0; //6.674E-11;
-	double[] potential= new double[particles.length];
+	double potential= 0;
 
 	
 	//Loop to cycle through particles for energy calculation
@@ -245,10 +242,8 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
 		Vector3d sep= new Vector3d(seperation(particles[i],particles[j]));
 		
 		//calculate P.E. from i to j
-		double U=(-G*particles[i].getMass()*particles[j].getMass())/sep.mag();
+		potential+=(-G*particles[i].getMass()*particles[j].getMass())/sep.mag();
 
-		potential[i]+= U;
-		potential[j]+= -1.0*U;
 	    }
 	}
 	
@@ -256,30 +251,76 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
     }
 	
 
-    
-    /* ******************************************
-     * Static Methods
-     ********************************************/
+
+    /** Create an array of Particles from a Scanner object of the correct format.
+     *
+     *
+     *
+     *
+     *@param Scanner object to create Particle3d array from.
+     *
+     *
+     *@return Particle3d array object containing all info from Scanner object.
+     */
+
+    public static Particle3d[] particleArray (Scanner info){
+	Particle3d[] particles = new Particle3d[info.nextInt()];
+
+	for(int i=0;i<length;i++){
+	    particles[i]=new Particle3d();
+	}
+	
+	for(int i=0;i<particles.length;i++){
+	    particles[i]=  readParticle(info);
+	}
+    }
+
+
     
     /** Scan variables from input file to create a particle.
      *
      *
      *@param info a Scanner object that provides mass, position, velocity and label.
-     *@return a Particle3d object created from scanner object.
+     *@return Particle3d object created from scanner object.
      */
     
     
     public static Particle3d readParticle(Scanner info){
 	Particle3d a= new Particle3d();
 
+	a.setLabel(info.next());
 	a.setMass(info.nextDouble());
 	a.setPosition(new Vector3d(info.nextDouble(), info.nextDouble(), info.nextDouble()));
 	a.setVelocity(new Vector3d(info.nextDouble(), info.nextDouble(), info.nextDouble()));
-	a.setLabel(info.next());
+
 	
 	return a;
     }
     
+    /** Method to write file in VMD format
+     *
+     *
+     *@param particles an array of Particle3d objects containing all particles in the system.
+     *@param outfile a PrintWriter object pointing towards the file it is desired to write to.
+     *
+     */
+
+    public static void toVMD(Particle3d[] particles, PrintWriter outfile) {
+	
+	
+	outfile.printf("%d\n" ,myParticle3d.length);
+	outfile.printf("Point = %d\n" , numstep);
+	
+	for (int i=0; i < myParticle3d.length; i++) {
+       
+	    outfile.printf("%s\n", myParticle3d[i].toString());
+	    
+	}
+	outfile.flush();
+    }
+    
+
+
 
     /**Determines the relative seperation of the position of two particles
      *

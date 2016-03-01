@@ -102,13 +102,12 @@ public class Particle3dVerlet {
 
 	//Test to see if new P.E. method works for arrays
 
-	double[] potentialE= new double[2];
+	double potentialE=0;
 
 	potentialE= Particle3d.potentialEnergy(mid);
 
 	
-	System.out.println(potentialE[0]);
-	System.out.println(potentialE[1]);
+	System.out.println(potentialE);
 
 
 
