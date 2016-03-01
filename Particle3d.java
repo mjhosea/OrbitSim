@@ -143,21 +143,69 @@ public class Particle3d {
     }
 
 
+
+
+
+
     /** Time integration support: evolve the position
      * according to dx = x + v * dt + 0.5 * a * dt^2.
      *
      * @param dt a double that is the timestep.
-     * @param force a vector that is the current force.
+     * @param force an array of vectors that store the current force.
+     * @param particles that is an array of Particle3d
      */
 
-    public void leapPosition(double dt, Vector3d force){
-	Vector3d acceleration= new Vector3d();
+
+   public static void leapPosition(double dt, Vector3d[] force, Particle3d[] particles){
+
+    Vector3d acceleration = new Vector3d(); 
+
+   //Loop to cycle through all particles in array
+    
+    for (int i = 0 ; i < particles.length ; i ++){
+
+    //Calculates the acceleration for each particle in the array and uses this to calculate the updated position
+    acceleration = force[i].scalarDivide(particles[i].getMass());
+
+   Vector3d  posI = particles[i].getPosition();
+   Vector3d  vosI= particles[i].getVelocity();
 	
-	acceleration= force.scalarDivide(mass);
+   particles[i].setPosition( Vector3d.addVector(Vector3d.addVector(posI , vosI.scalarMultiply(dt)), acceleration.scalarMultiply(0.5*dt*dt)));
 
-	position= Vector3d.addVector(Vector3d.addVector(position, velocity.scalarMultiply(dt)), acceleration.scalarMultiply(0.5*dt*dt));
+      }
 
-    }
+ }
+
+
+
+
+   /** Time integration support: evolve the velocity
+    * according to dv = f/m * dt.
+    *
+    * @param dt a double that is the timestep.
+    * @param force a Vector3d that is the current force on the particle.
+    */
+   
+    public static void leapVelocity(double  dt, Vector3d[] force, Particle3d[] particles) {
+	
+	Vector3d acceleration = new Vector3d();
+      
+	//Loop to cycle through all particles in array
+
+    	for (int i = 0; i < particles.length ; i ++){
+
+   	
+    	 acceleration = force[i].scalarDivide(particles[i].getMass());
+    	 particles[i].setVelocity( Vector3d.addVector(particles[i].getVelocity(), acceleration.scalarMultiply(dt)));
+        
+      }
+
+
+      }
+
+
+
+
 
      /** Returns the kinetic energy of a Particle3d,
      * calculated as 1/2*m*v^2. Where v, is the magnitude of the
@@ -173,6 +221,8 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
      *
      *@param centre a Particle3d object to calculate potential energy from
      *
+
+
      *
      *@return a double that is the potential energy
      */
@@ -182,6 +232,7 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
 
 	double G=1.0; //6.674E-11;
 	double[] potential= new double[particles.length];
+
 	
 	//Loop to cycle through particles for energy calculation
 	for(int i=0;i<particles.length;i++){
@@ -205,20 +256,6 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
     }
 	
 
-    
-
-     /** Time integration support: evolve the velocity
-     * according to dv = f/m * dt.
-     *
-     * @param dt a double that is the timestep.
-     * @param force a Vector3d that is the current force on the particle.
-     */
-    public void leapVelocity(double  dt, Vector3d force) {
-	
-	velocity = Vector3d.addVector(velocity, force.scalarDivide(mass).scalarMultiply(dt));
-        
-    }
-    
     
     /* ******************************************
      * Static Methods
@@ -261,6 +298,8 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
 
     }
 
+
+
     /**Converts a Vector3d object to a normalized vector in the same direction
      *
      *
@@ -279,7 +318,6 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
 	    }
 
     
-
     /** Method to calculate the Gravitational force between two particles
      *
      *@param particles an array of  Particle3d objects to calculate the gravitational force of
