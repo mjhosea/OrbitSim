@@ -155,7 +155,8 @@ public class Particle3d {
 
    public static void leapPosition(double dt, Vector3d[] force, Particle3d[] particles){
 
-    Vector3d acceleration = new Vector3d(); 
+
+    Vector3d acceleration = new Vector3d();
 
    //Loop to cycle through all particles in array
     
@@ -173,8 +174,7 @@ public class Particle3d {
 
  }
 
-
-
+    
    /** Time integration support: evolve the velocity
     * according to dv = f/m * dt.
     *
@@ -195,10 +195,9 @@ public class Particle3d {
     	 acceleration = force[i].scalarDivide(particles[i].getMass());
     	 particles[i].setVelocity( Vector3d.addVector(particles[i].getVelocity(), acceleration.scalarMultiply(dt)));
         
+
 	}
     }
-
-
 
 
 
@@ -212,13 +211,25 @@ public class Particle3d {
 public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
 
 
-
-
-
     
     /* ******************************************
      * Static Methods
      ********************************************/
+
+
+
+public static double kineticEnergy(Particle3d[] particles){
+	
+    double sum = 0; 
+
+    for(int i=0;i<particles.length;i++){
+
+	sum += particles[i].kineticEnergy();
+    }
+
+    return  sum;
+}
+
 
 
     

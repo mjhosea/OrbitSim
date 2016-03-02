@@ -103,8 +103,6 @@ public class OrbitSim {
 
 
 
-
-
 	/* Start of loop for time-integration via Velocity-Verlet algorithm
 	 *
 	 *
@@ -114,13 +112,47 @@ public class OrbitSim {
 	 */
    
 
-        for (int i=0; i < myParticle3d.length; i++) {
+	//Read in particle of interest
+		particles[i] = Particle3d.readParticle(orbitSimScan);
 
-        myParticle3d[i] = Particle3d.readParticle(orbitSimScan);
+		Vector3d[] force = Particle3d.forceCalc(particles);
+
+	//Loop for each time step 
+	for (int i=0; i<numstep; i++){
 
 
+	    //Leap position of all particles due to current peerwise forces
+	    for (int i=0; i <particles.length; i++) {
 
-	}
+        
+
+	    //Leap position of particle of intrest
+      	    Particle3d.leapPosition(dt, force, particles);
+		
+	    }
+
+	   
+	    //calculate the new pairwise forces
+
+	    Vector3d[] force_new = new Vector3d[paticles.length]; 
+
+	    force_new = Particle3d.forceCalc(particles);
+
+
+	    for (int i=0; i <myParticle3d.length; i++){
+
+	    Particle3d.leapVelocity(dt, force_new, particles);
+
+	    force = new_force; //Could cause issues (becasue we are equating memory adresses not values) 
+
+	   
+
+      	}
+
+	    t = t + dt
+
 	toVMD(myParticle3d, arrayPositions); //call this at the end of each time step 
+    }
+
     }
 }
