@@ -212,10 +212,16 @@ public class Particle3d {
 public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
 
 
+
+
+
+    
     /* ******************************************
      * Static Methods
      ********************************************/
 
+
+    
     /** Method to calculate Gravitational Potential energy of two particles
      *
      *@param particles an array of Particle3d objects containing all particles in the system.
@@ -253,7 +259,6 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
 
 
     /** Create an array of Particles from a Scanner object of the correct format.
-     *
      *
      *
      *
