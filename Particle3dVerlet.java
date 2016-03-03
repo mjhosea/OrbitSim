@@ -77,6 +77,8 @@ public class Particle3dVerlet {
 	mid[1] = Particle3d.readParticle(verletScan);
 
 
+
+	
 	//Calculate initial force
 
 	Vector3d[] force = new Vector3d[mid.length];
@@ -137,7 +139,7 @@ public class Particle3dVerlet {
 	
 	for (int i=0;i<numstep;i++){
 	
-	    // Update the postion using current velocity and force
+ 	    // Update the postion using current velocity and force
 	    
 	    mid[1].leapPosition(dt, force[1]);
 	    
@@ -175,7 +177,7 @@ public class Particle3dVerlet {
 	    energyOutput.printf("%10.5f %10.7f\n", t, totalE);
 
 
-	    }
+	}
 	// Close the output file
 	positionOutput.close();
 	

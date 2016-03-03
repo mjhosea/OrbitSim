@@ -154,7 +154,6 @@ public class Particle3d {
      * @param particles that is an array of Particle3d objects.
      */
 
-
    public static void leapPosition(double dt, Vector3d[] force, Particle3d[] particles){
 
 
@@ -165,37 +164,41 @@ public class Particle3d {
     for (int i = 0 ; i < particles.length ; i ++){
 
     //Calculates the acceleration for each particle in the array and uses this to calculate the updated position
+	
     acceleration = force[i].scalarDivide(particles[i].getMass());
 
-   Vector3d  posI = particles[i].getPosition();
-   Vector3d  vosI= particles[i].getVelocity();
+    Vector3d  posI = new Vector3d(particles[i].getPosition());
+    Vector3d  velI= new Vector3d(particles[i].getVelocity());
 	
-   particles[i].setPosition( Vector3d.addVector(Vector3d.addVector(posI , vosI.scalarMultiply(dt)), acceleration.scalarMultiply(0.5*dt*dt)));
-
-      }
-
- }
+   particles[i].setPosition( Vector3d.addVector(Vector3d.addVector(posI, velI.scalarMultiply(dt)), acceleration.scalarMultiply(0.5*dt*dt)));
+   
+    }
+    
+   }
 
     
    /** Time integration support: evolve the velocity
-    * according to dv = f/m * dt.
+    * according to dv = (f1+f2)/2m * dt.
     *
     * @param dt a double that is the timestep.
     * @param force an array of vectors that stores the current force.
     * @param particles that is an array of Particle3d objects.
     */
    
-    public static void leapVelocity(double  dt, Vector3d[] force, Particle3d[] particles) {
+    public static void leapVelocity(double  dt, Vector3d[] force, Vector3d[] forceNew, Particle3d[] particles) {
 	
-	Vector3d acceleration = new Vector3d();
+	Vector3d updateV = new Vector3d();
       
 	//Loop to cycle through all particles in array
 
     	for (int i = 0; i < particles.length ; i ++){
 
-   	
-    	 acceleration = force[i].scalarDivide(particles[i].getMass());
-    	 particles[i].setVelocity( Vector3d.addVector(particles[i].getVelocity(), acceleration.scalarMultiply(dt)));
+	    //initialize mass variable
+	    double mass= particles[i].getMass();
+
+	    
+	    updateV = Vector3d.addVector(force[i].scalarDivide(2*mass), forceNew[i].scalarDivide(2*mass));
+    	 particles[i].setVelocity( Vector3d.addVector(particles[i].getVelocity(), updateV.scalarMultiply(dt)));
         
 
 	}
@@ -273,7 +276,6 @@ public static double kineticEnergy(Particle3d[] particles){
 		
 		//calculate P.E. from i to j
 		potential+=(-G*particles[i].getMass()*particles[j].getMass())/sep.mag();
-
 	    }
 	}
 	
@@ -281,6 +283,7 @@ public static double kineticEnergy(Particle3d[] particles){
     }
 	
 
+    
 
     /** Create an array of Particles from a Scanner object of the correct format.
      *

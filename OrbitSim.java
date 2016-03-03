@@ -91,10 +91,6 @@ public class OrbitSim {
 	//create scanner from reader for parameter file
 	Scanner parameterScan= new Scanner(parameterRead);
 
-	//save parameters from scanner to global variables
-	double numStep= parameterScan.nextDouble();
-	double sizeStep= parameterScan.nextDouble();
-	
 	//arrayPositions to positionOutput
 	//create writer for VMD output
         PrintWriter positionOutput = new PrintWriter(new FileWriter(argv[2]));
@@ -103,7 +99,19 @@ public class OrbitSim {
 	PrintWriter energyOutput = new PrintWriter(new FileWriter(argv[3]));
 
 
+	
+	/* Intialize all parameters, energy, and force array
+	 *
+	 *
+	 *
+	 *
+	 *
+	 */
 
+	
+	//save parameters from scanner object to global variables
+	double numStep= parameterScan.nextDouble();
+	double sizeStep= parameterScan.nextDouble();
 	
 	//Initial time
 	double t=0.0;
@@ -111,18 +119,26 @@ public class OrbitSim {
 	//Initial energies
 	double totalE= Particle3d.potentialEnergy(particles) + Particle3d.kineticEnergy(particles);
 
+
+	//Calculate Initial Force
+	Vector3d[] force = Particle3d.forceCalc(particles);
 	
 	//tester code
 
 	System.out.println(t);
 	System.out.println(totalE);
 
-	energyOutput.printf("%10.5f %10.5f \n", t, totalE);
 
+	//Print these initial states to file
+
+	energyOutput.printf("%10.5f %10.5f \n", t, totalE); //something wrong here
+	
 	Particle3d.toVMD(particles, positionOutput, t);
 
 	
-		
+
+
+	
 	/* Start of loop for time-integration via Velocity-Verlet algorithm
 	 *
 	 *
@@ -132,46 +148,47 @@ public class OrbitSim {
 	 */
 
 
-	/**
-	
-	//Calculate initial forces
-	Vector3d[] force = Particle3d.forceCalc(particles);
+      
 
 	//Loop for each time step 
 	for (int i=0; i<numStep; i++){
 
 
-	    //Leap position of all particles due to current pairwise forces
-	    for (int j=0; j <particles.length; j++) {
+	    //Leap position of all particles due to current pairwise force
 
-        
-
-	    //Leap position of particle of interest
-      	    Particle3d.leapPosition(dt, force, particles);
+      	    Particle3d.leapPosition(sizeStep, force, particles);
 		
-	    }
-
 	   
-	    //calculate the new pairwise forces
+	    //update forces based on new positions
 
-	    Vector3d[] force_new = new Vector3d[paticles.length]; 
+	    Vector3d[] forceNew =  Particle3d.forceCalc(particles);
+	 
+	    //update velocity based on average of current and new force
+	    Particle3d.leapVelocity(sizeStep, force, forceNew, particles);
 
-	    force_new = Particle3d.forceCalc(particles);
-
-
-	    for (int i=0; i <myParticle3d.length; i++){
-
-	    Particle3d.leapVelocity(dt, force_new, particles);
-
-	    force = new_force; //Could cause issues (becasue we are equating memory adresses not values) 
+	    //set force array to new forces
+	    for (int j=0; j<force.length; j++){
+	    force[j] = forceNew[j]; 
 
 	    }
 
-	    t = t + dt;
+	    //update timestep
+	    t += sizeStep;
 
-		toVMD(particles, positionOutput,i); //call this at the end of each time step 
+	    //print particle positions
+	    Particle3d.toVMD(particles, positionOutput,t);
+
+	    //calculate total energy
+	     totalE= Particle3d.potentialEnergy(particles) + Particle3d.kineticEnergy(particles);
+	    
+	    //print energy output
+	     energyOutput.printf("%10.5f %10.5f \n", t, totalE);
 	}
-	*/
+
+	//Close the output streams
+	energyOutput.close();
+	positionOutput.close();
+	
 	
     }
 }
