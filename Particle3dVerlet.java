@@ -113,7 +113,7 @@ public class Particle3dVerlet {
 
 
 	//================================================================
-	/*
+	
 
 	// Start of the velocity Verlet algorithm
 
@@ -128,6 +128,13 @@ public class Particle3dVerlet {
 
 	energyOutput.printf("%10.5f %10.7f\n", t, totalE);
 
+
+
+
+
+
+
+	
 	for (int i=0;i<numstep;i++){
 	
 	    // Update the postion using current velocity and force
@@ -168,7 +175,7 @@ public class Particle3dVerlet {
 	    energyOutput.printf("%10.5f %10.7f\n", t, totalE);
 
 
-	    }*/
+	    }
 	// Close the output file
 	positionOutput.close();
 	

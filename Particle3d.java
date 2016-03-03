@@ -8,8 +8,10 @@
  */
 
 import java.util.Scanner;
-
 import java.lang.Math;
+import java.io.*;
+
+
 
 public class Particle3d {
 
@@ -217,6 +219,17 @@ public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
      ********************************************/
 
 
+    /** Method to calculate total kinetic energy of a system of particles
+     * stored within an array. Calculations performed utilizing the 
+     *kineticEnergy instance method described above.
+     *
+     *
+     *
+     *@param particles the array containing all particles of the system.
+     *
+     *@return double that contains the sum of individual kinetic energy 
+     * contributions from each particle.
+     */
 
 public static double kineticEnergy(Particle3d[] particles){
 	
@@ -238,7 +251,7 @@ public static double kineticEnergy(Particle3d[] particles){
      *@param particles an array of Particle3d objects containing all particles in the system.
      *
      *
-     *@return a double that is the potential energy of the system.
+     *@return double that is the potential energy of the system.
      */
 
 
@@ -282,13 +295,16 @@ public static double kineticEnergy(Particle3d[] particles){
     public static Particle3d[] particleArray (Scanner info){
 	Particle3d[] particles = new Particle3d[info.nextInt()];
 
-	for(int i=0;i<length;i++){
+	for(int i=0;i<particles.length;i++){
 	    particles[i]=new Particle3d();
 	}
 	
 	for(int i=0;i<particles.length;i++){
 	    particles[i]=  readParticle(info);
+
 	}
+
+	return particles;
     }
 
 
@@ -318,18 +334,19 @@ public static double kineticEnergy(Particle3d[] particles){
      *
      *@param particles an array of Particle3d objects containing all particles in the system.
      *@param outfile a PrintWriter object pointing towards the file it is desired to write to.
+     *@param currentStep an integer specifying the current time-step in the simulation.
      *
      */
 
-    public static void toVMD(Particle3d[] particles, PrintWriter outfile) {
+    public static void toVMD(Particle3d[] particles, PrintWriter outfile, double currentStep) {
 	
 	
-	outfile.printf("%d\n" ,myParticle3d.length);
-	outfile.printf("Point = %d\n" , numstep);
+	outfile.printf("%d \n" ,particles.length);
+	outfile.printf("Point = %10.5f \n" , currentStep);
 	
-	for (int i=0; i < myParticle3d.length; i++) {
+	for (int i=0; i < particles.length; i++) {
        
-	    outfile.printf("%s\n", myParticle3d[i].toString());
+	    outfile.printf("%s\n", particles[i].toString());
 	    
 	}
 	outfile.flush();

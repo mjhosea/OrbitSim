@@ -11,20 +11,23 @@
  * intial states of every particle. There should be an integer at the start of the file indicating the number
  * of particles in the system. From here, each particle's intial state should be described as follows:
  *
+ *=============================================================
  * A string designating the particle label.
  * A double indicating the mass of the particle.
  * Three doubles indicating the initial position of the particle.
  * Three doubles indicating the initial velocity of the particle.
- * 
+ *============================================================ 
+ *
  * Repeat this sequence for all desired particles in the system.
  *
  *
  * The second command line argument is the file name correlating to the parameters of the system. These
  * should be in the following sequence:
  *
+ *===============================================================
  * A double indicating the number of time-steps to evolve over.
  * A double indicating the size of each time-step.
- * 
+ * =============================================================
  *
  * The third command line argument is the name of the file to write the VMD trajectory info to.
  *
@@ -80,12 +83,12 @@ public class OrbitSim {
 	Scanner particleScan= new Scanner(particleInfo);
 
 	// create array of particles from scanner object
-	Particle3d[] particles = particleArray(particleInfo);
+	Particle3d[] particles = Particle3d.particleArray(particleScan);
 
 	//create reader for parameter file
 	BufferedReader parameterRead = new BufferedReader(new FileReader(argv[1]));
 
-	//create scanner from reader for initial states of particles
+	//create scanner from reader for parameter file
 	Scanner parameterScan= new Scanner(parameterRead);
 
 	//save parameters from scanner to global variables
@@ -101,8 +104,25 @@ public class OrbitSim {
 
 
 
+	
+	//Initial time
+	double t=0.0;
 
+	//Initial energies
+	double totalE= Particle3d.potentialEnergy(particles) + Particle3d.kineticEnergy(particles);
 
+	
+	//tester code
+
+	System.out.println(t);
+	System.out.println(totalE);
+
+	energyOutput.printf("%10.5f %10.5f \n", t, totalE);
+
+	Particle3d.toVMD(particles, positionOutput, t);
+
+	
+		
 	/* Start of loop for time-integration via Velocity-Verlet algorithm
 	 *
 	 *
@@ -110,23 +130,23 @@ public class OrbitSim {
 	 *
 	 *
 	 */
-   
 
-	//Read in particle of interest
-		particles[i] = Particle3d.readParticle(orbitSimScan);
 
-		Vector3d[] force = Particle3d.forceCalc(particles);
+	/**
+	
+	//Calculate initial forces
+	Vector3d[] force = Particle3d.forceCalc(particles);
 
 	//Loop for each time step 
-	for (int i=0; i<numstep; i++){
+	for (int i=0; i<numStep; i++){
 
 
-	    //Leap position of all particles due to current peerwise forces
-	    for (int i=0; i <particles.length; i++) {
+	    //Leap position of all particles due to current pairwise forces
+	    for (int j=0; j <particles.length; j++) {
 
         
 
-	    //Leap position of particle of intrest
+	    //Leap position of particle of interest
       	    Particle3d.leapPosition(dt, force, particles);
 		
 	    }
@@ -145,14 +165,13 @@ public class OrbitSim {
 
 	    force = new_force; //Could cause issues (becasue we are equating memory adresses not values) 
 
-	   
+	    }
 
-      	}
+	    t = t + dt;
 
-	    t = t + dt
-
-	toVMD(myParticle3d, arrayPositions); //call this at the end of each time step 
-    }
-
+		toVMD(particles, positionOutput,i); //call this at the end of each time step 
+	}
+	*/
+	
     }
 }
