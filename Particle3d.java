@@ -466,61 +466,49 @@ public static double kineticEnergy(Particle3d[] particles){
 
 public static double[] gradientCalc(Particle3d[] particles){
 
-    double ySun = 0;
-    double xSun = 0;
+    double ySun = particles[0].getPosition().getY();
+    double xSun = particles[0].getPosition().getX();
     
-    double[] yPlanet= new double[particles.length];
-    double[] xPlanet = new double[particles.length];
+    double yPlanet= 0;
+    double xPlanet = 0;
     double[] grad = new double[particles.length];
-
-    // for(int i=0; i<particles.length; i++){
-    //yPlanet[i]= new double();
-    //xPlanet[i]= new double();
-    // grad[i]= new double();
-    //	}
+    
+    for(int i=0; i<particles.length; i++){	 
+	 grad[i]= 0;
+     }
 
 
     for(int i = 0; i < particles.length ; i ++){
-
-    ySun = particles[0].getPosition().getY();
-    xSun = particles[0].getPosition().getX();
     
-    yPlanet[i] = particles[i].getPosition().getY();
-    xPlanet[i] = particles[i].getPosition().getX();
+    yPlanet = particles[i].getPosition().getY();
+    xPlanet = particles[i].getPosition().getX();
 
-    grad[i] = ((yPlanet[i]-ySun)/(xPlanet[i]-xSun));
+    grad[i] = ((yPlanet-ySun)/(xPlanet-xSun));
 
-
-
-   
     }
     return (grad);
 
 }
 
 
-    public static void gradTrack(Particle3d[] particles){
-	
-	//calculate Initial Gradients 
-	double[] grad = Particle3d.gradientCalc(particles);
+    public static void orbitTrack(Particle3d[] particles, double[] count, double[] grad){
 
-	//calculate Initial counts
-	double[] count = new double[particles.length];
 
-	//creates and array of doubles for the new gradient after leap position 
-	double[] gradNew = Particle3d.gradientCalc(particles);
-	for(int l=0; l<gradNew.length; l++){
-	    gradNew[l] = gradNew[l]*(-1);
+	//creates an array of doubles for the new gradient after leap position 
+	double[] gradNew = gradientCalc(particles);
+
+	//Loop to determine increment increase of orbit track
+	for(int l=0; l< particles.length; l++){
 	    
+
 	    // if statment that adds 0.25 onto the orbit count if orbiting planet moves into new quadrent 
 	    if(gradNew[l]/Math.abs(gradNew[l]) == (-1)* grad[l]/Math.abs(grad[l])){
 		
-		count[l] = count[l] + 0.25;
+		count[l]+= 0.25;
 		
-		// grad[l]=gradNew[l];
+		grad[l]=gradNew[l];
 		
 	    }
-	    grad[l]=gradNew[l];
 
 	}
     }
@@ -592,9 +580,7 @@ public static double[] gradientCalc(Particle3d[] particles){
 	for(int l=0; l<particles.length; l++){
 	    
 	    particles[l].setVelocity(Vector3d.subVector(particles[l].getVelocity(), vCoM));
-     
-	    
-     
+    
 	}
 
     }

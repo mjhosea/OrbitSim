@@ -125,8 +125,6 @@ public class OrbitSim {
 	double sizeStep= parameterScan.nextDouble();
 	double G= parameterScan.nextDouble();
 
-	double[] count = new double[particles.length];	
-
 	// Set the value of G read from input file
 	Particle3d.setG(G);
 
@@ -137,11 +135,17 @@ public class OrbitSim {
 	double[] aphelion= new double[particles.length];
 	double[] perihelion= new double[particles.length];
 
+	//create a double array to track orbits
+	double[] count = new double[particles.length];	
+
+	//create a double array for initial gradients
+	double[] grad= Particle3d.gradientCalc(particles);
 
 	//initialize double arrays
 	for(int i=0;i<particles.length;i++){
 	    aphelion[i]= 0.0;
 	    perihelion[i]= 100000000;
+	    count[i]=0;
 	}
 
 	//Initial energies
@@ -173,7 +177,6 @@ public class OrbitSim {
 	Particle3d.adjustedVelocitys(particles);
 
 
-
 	/* Start of loop for time-integration via Velocity-Verlet algorithm
 	 *
 	 *
@@ -182,7 +185,7 @@ public class OrbitSim {
 	 *
 	 */
 
-
+       
 
 	//Loop for each time step 
 	for (int i=0; i<numStep; i++){
@@ -196,7 +199,6 @@ public class OrbitSim {
 		
 	   
 	    //update forces based on new positions
-<<<<<<< HEAD
 
 	    Vector3d[] forceNew =  Particle3d.forceCalc(particles);
 	 
@@ -221,27 +223,34 @@ public class OrbitSim {
 	    //print energy output
 	     energyOutput.printf("%10.5f %10.5f \n", t, totalE);
 	     
-	     //calculate gradient of Orbit for orbitTracker
-	     Particle3d.gradTrack(particles);
-	}
-
-	//Loop to print orbit info
-
-	for(int i=0; i<particles.length; i++){
-	    
-	    orbitOutput.printf("%s : Perihelion= %10.5f, Aphelion=%10.5f, Orbits=%10.5f \n", particles[i].getLabel(), perihelion[i], aphelion[i], count[i]);
-	    
+	     //track orbits
+	     Particle3d.orbitTrack(particles, count, grad);
 
 	}
-
-	//Close the output streams
-	energyOutput.close();
-	positionOutput.close();
-	orbitOutput.close();
+	
+    
+    
+    
+    
+    //Loop to print orbit info
+    
+    for(int i=0; i<particles.length; i++){
+	
+	orbitOutput.printf("%s : Perihelion= %10.5f, Aphelion=%10.5f, Orbits=%10.5f \n", particles[i].getLabel(), perihelion[i], aphelion[i], count[i]);
+	
 	
     }
-       
+    
 	
+    //Close the output streams
+    energyOutput.close();
+    positionOutput.close();
+    orbitOutput.close();
+    
+    }
+
+	
+
+
+
 }
-
-
