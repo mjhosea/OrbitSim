@@ -126,7 +126,7 @@ public class Particle3d {
      * format identifier.
      */
     public String toString() {
-	return "<" +  this.getLabel() + " >" +  this.getPosition() ;
+	return  this.getLabel()  + " " + this.getPosition()+" " ;
     }
     
     /* ******************************************
@@ -344,7 +344,7 @@ public static double kineticEnergy(Particle3d[] particles){
     public static void toVMD(Particle3d[] particles, PrintWriter outfile, double currentStep) {
 	
 	
-	outfile.printf("%d \n" ,particles.length);
+	outfile.printf("%d\n" ,particles.length);
 	outfile.printf("Point = %10.5f \n" , currentStep);
 	
 	for (int i=0; i < particles.length; i++) {
@@ -409,7 +409,7 @@ public static double kineticEnergy(Particle3d[] particles){
 	for(int i=0; i<particles.length; i++){
 	    force[i]= new Vector3d();
 	}
-       	double G=1.0; //6.674E-11;
+       	double G=0.000144;   //1.0; //6.674E-11;
 	double magsep=0.0;
 	Vector3d sep= new Vector3d();
 	Vector3d newForce= new Vector3d();

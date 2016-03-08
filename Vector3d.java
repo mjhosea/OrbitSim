@@ -127,7 +127,8 @@ public class Vector3d {
 	double y= this.getY();
 	double z= this.getZ();
 
-	return "<" + x + ">" + "<"+ y + ">" + "<" + z + ">";
+
+	return Double.toString(x)+ " " + Double.toString(y) +" " + Double.toString(z);
 	    }
 
 
