@@ -122,12 +122,13 @@ public class Vector3d {
      *@return String vector formatted to string
      *
      */
-    public String toString(){
+      public String toString(){
 	double x= this.getX();
 	double y= this.getY();
 	double z= this.getZ();
 
-	return "<" + x + ">" + "<"+ y + ">" + "<" + z + ">";
+
+	return Double.toString(x)+ " " + Double.toString(y) +" " + Double.toString(z);
 	    }
 
 
