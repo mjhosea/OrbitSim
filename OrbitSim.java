@@ -7,7 +7,7 @@
  * bodies in the solar system.
  *
  *
- * The command line takes four arguments. The first argument is the file name of the file containing the 
+ * The command line takes five arguments. The first argument is the file name of the file containing the 
  * intial states of every particle. There should be an integer at the start of the file indicating the number
  * of particles in the system. From here, each particle's intial state should be described as follows:
  *
@@ -20,6 +20,9 @@
  *
  * Repeat this sequence for all desired particles in the system.
  *
+ * IMPORTANT NOTE: The Sun needs to be the first particle in the initial input file. Earth's 
+ * moon needs to be the second.
+ *
  *
  * The second command line argument is the file name correlating to the parameters of the system. These
  * should be in the following sequence:
@@ -27,11 +30,14 @@
  *===============================================================
  * A double indicating the number of time-steps to evolve over.
  * A double indicating the size of each time-step.
+ * A double indicating the value of the gravitational constant, G.
  * =============================================================
  *
  * The third command line argument is the name of the file to write the VMD trajectory info to.
  *
  * The fourth command line argument is the name of the file to write the total energy values to.
+ * The fifth command line argument is the name of the file to write the orbit count values and eccentricity values to.
+ *
  *
  *
  *@author C. John
@@ -56,6 +62,7 @@ public class OrbitSim {
      *@param argv[1] values of the parameters.
      *@param argv[2] name of the output trajectory file for the VMD writing.
      *@param argv[3] name of the output file to monitor energy fluctuations. 
+     *@param argv[4] name of the output file to track orbits and eccentricities.
      *
      */
 
@@ -100,6 +107,9 @@ public class OrbitSim {
 	//create writer for energy output
 	PrintWriter energyOutput = new PrintWriter(new FileWriter(argv[3]));
 
+	//create writer for orbit count and eccentricities
+	PrintWriter orbitOutput = new PrintWriter(new FileWriter(argv[4]));
+
 
 	
 	/* Intialize all parameters, energy, and force array
@@ -114,9 +124,24 @@ public class OrbitSim {
 	//save parameters from scanner object to global variables
 	double numStep= parameterScan.nextDouble();
 	double sizeStep= parameterScan.nextDouble();
+	double G= parameterScan.nextDouble();
 	
+	// Set the value of G read from input file
+	Particle3d.setG(G);
+
 	//Initial time
 	double t=0.0;
+
+	//create an array of doubles to track aphelions and parahelions
+	double[] aphelion= new double[particles.length];
+	double[] perihelion= new double[particles.length];
+
+
+	//initialize double arrays
+	for(int i=0;i<particles.length;i++){
+	    aphelion[i]= 0.0;
+	    perihelion[i]= 100000000;
+	}
 
 	//Initial energies
 	double totalE= Particle3d.potentialEnergy(particles) + Particle3d.kineticEnergy(particles);
@@ -125,11 +150,6 @@ public class OrbitSim {
 	//Calculate Initial Force
 	Vector3d[] force = Particle3d.forceCalc(particles);
 	
-	//tester code
-
-	System.out.println(t);
-	System.out.println(totalE);
-
 
 	//Print these initial states to file
 
@@ -155,6 +175,10 @@ public class OrbitSim {
 	//Loop for each time step 
 	for (int i=0; i<numStep; i++){
 
+
+	    //test for eccentricities
+	    Particle3d.eccentric(perihelion, aphelion, particles);
+	   
 
 	    //Leap position of all particles due to current pairwise force
 
@@ -187,10 +211,19 @@ public class OrbitSim {
 	     energyOutput.printf("%10.5f %10.5f \n", t, totalE);
 	}
 
+	//Loop to print orbit info
+
+	for(int i=0; i<particles.length; i++){
+	    
+	    orbitOutput.printf("%s : Perihelion= %10.5f, Aphelion=%10.5f \n", particles[i].getLabel(), perihelion[i], aphelion[i]);
+	    
+
+	}
+
 	//Close the output streams
 	energyOutput.close();
 	positionOutput.close();
-	
+	orbitOutput.close();
 	
     }
 }

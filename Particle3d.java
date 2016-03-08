@@ -23,6 +23,7 @@ public class Particle3d {
     private Vector3d position;
     private Vector3d velocity; 
     private String label;  
+    private static double G;
 
     // Setters and Getters
 
@@ -54,6 +55,23 @@ public class Particle3d {
 
     public String getLabel() {return label;}
        
+    /** Get the value of G
+     *
+     *
+     *@return a double that is G
+     */
+
+    public static double getG(){return G;}
+
+
+    /** Set the value of G
+     *
+     *
+     */
+
+    public static void setG(double val){ G=val;} 
+
+
 
     /** Set the position of a particle.
      *
@@ -260,7 +278,6 @@ public static double kineticEnergy(Particle3d[] particles){
 
     public static double potentialEnergy(Particle3d[] particles){
 
-	double G=1.0; //6.674E-11;
 	double potential= 0;
 
 	
@@ -327,7 +344,6 @@ public static double kineticEnergy(Particle3d[] particles){
 	a.setMass(info.nextDouble());
 	a.setPosition(new Vector3d(info.nextDouble(), info.nextDouble(), info.nextDouble()));
 	a.setVelocity(new Vector3d(info.nextDouble(), info.nextDouble(), info.nextDouble()));
-
 	
 	return a;
     }
@@ -409,7 +425,7 @@ public static double kineticEnergy(Particle3d[] particles){
 	for(int i=0; i<particles.length; i++){
 	    force[i]= new Vector3d();
 	}
-       	double G=0.000144;   //1.0; //6.674E-11;
+
 	double magsep=0.0;
 	Vector3d sep= new Vector3d();
 	Vector3d newForce= new Vector3d();
@@ -442,6 +458,36 @@ public static double kineticEnergy(Particle3d[] particles){
 	return  (force);
     }
     
+
+
+
+
+    /**Method to calculate Aphelion and Perihelion of planetary orbits.
+     *
+     *
+     *
+     *@param perihelion[] array of doubles to hold the perihelion values for each planet.
+     *@param aphelion[] array of doubles to hold the aphelion values for each planet.
+     *@param particles[] array of Particle3d objects.
+     *
+     */
+
+    public static void eccentric(double perihelion[], double aphelion[], Particle3d particles[]){
+
+	//loop to cycle through each particle in system
+	for(int j=0; j<particles.length; j++){
+	    double separation=seperation(particles[j], particles[0]).mag();
+	    
+	    if(separation<perihelion[j]){
+		perihelion[j]= separation;
+	    }
+	    else if(separation>aphelion[j]){
+		aphelion[j]= separation;
+	    }
+	}
+       
+
+    }
     
     
 }
