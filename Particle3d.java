@@ -359,8 +359,9 @@ public static double kineticEnergy(Particle3d[] particles){
 
     public static void toVMD(Particle3d[] particles, PrintWriter outfile, double currentStep) {
 	
-	
+      
 	outfile.printf("%d\n" ,particles.length);
+
 	outfile.printf("Point = %10.5f \n" , currentStep);
 	
 	for (int i=0; i < particles.length; i++) {
@@ -426,6 +427,7 @@ public static double kineticEnergy(Particle3d[] particles){
 	    force[i]= new Vector3d();
 	}
 
+
 	double magsep=0.0;
 	Vector3d sep= new Vector3d();
 	Vector3d newForce= new Vector3d();
@@ -456,8 +458,76 @@ public static double kineticEnergy(Particle3d[] particles){
 	    }
 	}
 	return  (force);
+
+
+
     }
     
+
+public static double[] gradientCalc(Particle3d[] particles){
+
+    double ySun = 0;
+    double xSun = 0;
+    
+    double[] yPlanet= new double[particles.length];
+    double[] xPlanet = new double[particles.length];
+    double[] grad = new double[particles.length];
+
+    // for(int i=0; i<particles.length; i++){
+    //yPlanet[i]= new double();
+    //xPlanet[i]= new double();
+    // grad[i]= new double();
+    //	}
+
+
+    for(int i = 0; i < particles.length ; i ++){
+
+    ySun = particles[0].getPosition().getY();
+    xSun = particles[0].getPosition().getX();
+    
+    yPlanet[i] = particles[i].getPosition().getY();
+    xPlanet[i] = particles[i].getPosition().getX();
+
+    grad[i] = ((yPlanet[i]-ySun)/(xPlanet[i]-xSun));
+
+
+
+   
+    }
+    return (grad);
+
+}
+
+
+    public static void gradTrack(Particle3d[] particles){
+	
+	//calculate Initial Gradients 
+	double[] grad = Particle3d.gradientCalc(particles);
+
+	//calculate Initial counts
+	double[] count = new double[particles.length];
+
+	//creates and array of doubles for the new gradient after leap position 
+	double[] gradNew = Particle3d.gradientCalc(particles);
+	for(int l=0; l<gradNew.length; l++){
+	    gradNew[l] = gradNew[l]*(-1);
+	    
+	    // if statment that adds 0.25 onto the orbit count if orbiting planet moves into new quadrent 
+	    if(gradNew[l]/Math.abs(gradNew[l]) == (-1)* grad[l]/Math.abs(grad[l])){
+		
+		count[l] = count[l] + 0.25;
+		
+		// grad[l]=gradNew[l];
+		
+	    }
+	    grad[l]=gradNew[l];
+
+	}
+    }
+
+
+    
+
 
 
 
@@ -485,7 +555,47 @@ public static double kineticEnergy(Particle3d[] particles){
 		aphelion[j]= separation;
 	    }
 	}
+
+}
        
+
+
+
+    
+    /**Method to calculate the CoM velocity adjustment.
+     *
+     *@param particles[] an array of particles for the orbitary system.
+     *
+     */
+    public static void adjustedVelocitys(Particle3d[] particles){
+	
+	
+	double massTotal = 0.0;
+	
+        Vector3d vCoM = new Vector3d();
+	
+	
+	for(int l=0; l<particles.length; l++){
+	    
+	    massTotal += particles[l].getMass();
+	}
+	
+
+	for(int l=0; l<particles.length; l++){
+	    Vector3d momentum = (particles[l].getVelocity()).scalarMultiply(particles[l].getMass());
+	    vCoM = Vector3d.addVector(vCoM, momentum);
+	    
+	}
+	
+	vCoM = vCoM.scalarDivide(massTotal);
+	
+	for(int l=0; l<particles.length; l++){
+	    
+	    particles[l].setVelocity(Vector3d.subVector(particles[l].getVelocity(), vCoM));
+     
+	    
+     
+	}
 
     }
     

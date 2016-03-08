@@ -23,7 +23,6 @@
  * IMPORTANT NOTE: The Sun needs to be the first particle in the initial input file. Earth's 
  * moon needs to be the second.
  *
- *
  * The second command line argument is the file name correlating to the parameters of the system. These
  * should be in the following sequence:
  *
@@ -50,7 +49,6 @@ import java.io.*;
 import java.util.Scanner;
 import java.text.*;
 import java.math.*;
-
 
 public class OrbitSim {
 
@@ -109,6 +107,7 @@ public class OrbitSim {
 
 	//create writer for orbit count and eccentricities
 	PrintWriter orbitOutput = new PrintWriter(new FileWriter(argv[4]));
+    
 
 
 	
@@ -125,7 +124,9 @@ public class OrbitSim {
 	double numStep= parameterScan.nextDouble();
 	double sizeStep= parameterScan.nextDouble();
 	double G= parameterScan.nextDouble();
-	
+
+	double[] count = new double[particles.length];	
+
 	// Set the value of G read from input file
 	Particle3d.setG(G);
 
@@ -157,10 +158,22 @@ public class OrbitSim {
 	
 	Particle3d.toVMD(particles, positionOutput, t);
 
-	
+       
+
+	//calculate Initial vCoM
+	Vector3d vCoM = new Vector3d();
+
+	//initialize total mass
+	double massTotal = 0.0;
 
 
-	
+
+	//Adjusting initial velocities of all bodies
+
+	Particle3d.adjustedVelocitys(particles);
+
+
+
 	/* Start of loop for time-integration via Velocity-Verlet algorithm
 	 *
 	 *
@@ -170,15 +183,12 @@ public class OrbitSim {
 	 */
 
 
-      
 
 	//Loop for each time step 
 	for (int i=0; i<numStep; i++){
 
-
 	    //test for eccentricities
 	    Particle3d.eccentric(perihelion, aphelion, particles);
-	   
 
 	    //Leap position of all particles due to current pairwise force
 
@@ -186,6 +196,7 @@ public class OrbitSim {
 		
 	   
 	    //update forces based on new positions
+<<<<<<< HEAD
 
 	    Vector3d[] forceNew =  Particle3d.forceCalc(particles);
 	 
@@ -209,13 +220,16 @@ public class OrbitSim {
 	    
 	    //print energy output
 	     energyOutput.printf("%10.5f %10.5f \n", t, totalE);
+	     
+	     //calculate gradient of Orbit for orbitTracker
+	     Particle3d.gradTrack(particles);
 	}
 
 	//Loop to print orbit info
 
 	for(int i=0; i<particles.length; i++){
 	    
-	    orbitOutput.printf("%s : Perihelion= %10.5f, Aphelion=%10.5f \n", particles[i].getLabel(), perihelion[i], aphelion[i]);
+	    orbitOutput.printf("%s : Perihelion= %10.5f, Aphelion=%10.5f, Orbits=%10.5f \n", particles[i].getLabel(), perihelion[i], aphelion[i], count[i]);
 	    
 
 	}
@@ -226,4 +240,8 @@ public class OrbitSim {
 	orbitOutput.close();
 	
     }
+       
+	
 }
+
+
