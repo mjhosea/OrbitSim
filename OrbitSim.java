@@ -107,7 +107,7 @@ public class OrbitSim {
 
 	//create writer for orbit count and eccentricities
 	PrintWriter orbitOutput = new PrintWriter(new FileWriter(argv[4]));
-    
+   
 
 
 	
@@ -125,7 +125,7 @@ public class OrbitSim {
 	double sizeStep= parameterScan.nextDouble();
 	double G= parameterScan.nextDouble();
 
-	double[] count = new double[particles.length];	
+
 
 	// Set the value of G read from input file
 	Particle3d.setG(G);
@@ -182,21 +182,73 @@ public class OrbitSim {
 	 *
 	 */
 
-
-
+		
+	double[] count = new double[particles.length];
+	for(int i = 0; i<particles.length; i++){
+	    count[i] = 0;
+	}
+	
+	double[] yPlanet = new double[particles.length];
+	double[] xPlanet = new double[particles.length];
+	double ySun = 0.0;
+	double xSun = 0.0; 
+	
+	
+	//create an array to store the gradient of each planet
+	double[] grad = new double[particles.length];
+	
+	double[] gradNew = new double[particles.length];
+	
+	for(int i = 0; i<particles.length; i++){
+	    
+	    ySun = particles[0].getPosition().getY();
+	    xSun = particles[0].getPosition().getX();
+	    yPlanet[i] = particles[i].getPosition().getY();
+	    xPlanet[i] = particles[i].getPosition().getX();
+       
+	    grad[i] = ((yPlanet[i]-ySun  )/(xPlanet[i]-xSun  ));
+       
+	}
+	
+	
+	
 	//Loop for each time step 
 	for (int i=0; i<numStep; i++){
-
+	    
 	    //test for eccentricities
 	    Particle3d.eccentric(perihelion, aphelion, particles);
-
+	    
 	    //Leap position of all particles due to current pairwise force
-
+	    
       	    Particle3d.leapPosition(sizeStep, force, particles);
+	    
+	    
+	    for(int l=0; l<particles.length; l++){
+	        gradNew[l] =  (yPlanet[l]-ySun)/(xPlanet[l]-xSun );
 		
+		// if statment that adds 0.25 onto the orbit count if orbiting planet 
+		//moves into new quadrent 
+
+		if(gradNew[l]/Math.abs(gradNew[l]) == (-1)* grad[l]/Math.abs(grad[l])){
+		    
+		    count[l] = count[l] + 0.25;
+		    
+		    grad[l] = gradNew[l];
+		    
+
+	    }
+
+	}
+
+
+
+
+
+
+
 	   
 	    //update forces based on new positions
-<<<<<<< HEAD
+
 
 	    Vector3d[] forceNew =  Particle3d.forceCalc(particles);
 	 
@@ -208,7 +260,7 @@ public class OrbitSim {
 	    force[j] = forceNew[j]; 
 
 	    }
-
+	    
 	    //update timestep
 	    t += sizeStep;
 
@@ -222,7 +274,8 @@ public class OrbitSim {
 	     energyOutput.printf("%10.5f %10.5f \n", t, totalE);
 	     
 	     //calculate gradient of Orbit for orbitTracker
-	     Particle3d.gradTrack(particles);
+	     //  Particle3d.orbitTrack(particles);
+
 	}
 
 	//Loop to print orbit info
@@ -231,7 +284,8 @@ public class OrbitSim {
 	    
 	    orbitOutput.printf("%s : Perihelion= %10.5f, Aphelion=%10.5f, Orbits=%10.5f \n", particles[i].getLabel(), perihelion[i], aphelion[i], count[i]);
 	    
-
+	    System.out.print(particles[i].getVelocity() + " ");
+	 
 	}
 
 	//Close the output streams
@@ -240,8 +294,9 @@ public class OrbitSim {
 	orbitOutput.close();
 	
     }
-       
+ 
 	
 }
+
 
 
