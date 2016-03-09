@@ -83,11 +83,9 @@ public class OrbitSim {
 
 
 
-	//orbitSimReader to particleInfo
 	//create reader for initial states of particles
 	BufferedReader particleInfo = new BufferedReader(new FileReader(argv[0]));
 
-	//orbitSimScan to particleScan
 	//create scanner from reader for initial states of particles
 	Scanner particleScan= new Scanner(particleInfo);
 
@@ -100,7 +98,6 @@ public class OrbitSim {
 	//create scanner from reader for parameter file
 	Scanner parameterScan= new Scanner(parameterRead);
 
-	//arrayPositions to positionOutput
 	//create writer for VMD output
         PrintWriter positionOutput = new PrintWriter(new FileWriter(argv[2]));
 
@@ -109,7 +106,7 @@ public class OrbitSim {
 
 	//create writer for orbit count and eccentricities
 	PrintWriter orbitOutput = new PrintWriter(new FileWriter(argv[4]));
-    
+   
 
 
 	
@@ -206,20 +203,15 @@ public class OrbitSim {
 	 *
 	 */
 
-       
-
 	//Loop for each time step 
 	for (int i=0; i<numStep; i++){
-
+	    
 	    //test for eccentricities
 	    Particle3d.eccentric(perihelion, aphelion, particles);
 
-
-	    //Leap position of all particles due to current pairwise force
-
+	    //Leap position of all particles due to current pairwise force  
       	    Particle3d.leapPosition(sizeStep, force, particles);
-		
-	   
+	    	   
 	   
 	    //Loop through to save new positions for orbit tracking
 	    for(int j=0; j<particles.length; j++){
@@ -236,7 +228,6 @@ public class OrbitSim {
 	    moonOrbits+= Particle3d.moonTrac(moonInitial, moonNext, moonOrbits);
 
 
-
 	    //update forces based on new positions
 
 	    Vector3d[] forceNew =  Particle3d.forceCalc(particles);
@@ -248,7 +239,7 @@ public class OrbitSim {
 	    for (int j=0; j<force.length; j++){
 	    force[j] = forceNew[j]; 
 	    }
-
+	    
 	    //update timestep
 	    t += sizeStep;
 
@@ -283,9 +274,4 @@ public class OrbitSim {
     orbitOutput.close();
     
     }
-
-	
-
-
-
 }

@@ -1,5 +1,14 @@
 /**
- *Computer Modelling, Exercise 3: Particle3D class.
+ * Particle3D class.
+ *
+ * This class utilises the properties of Vectror3d class
+ * in order to create arrays of particles. Contained within the class are numerous
+ * methods to carry out calculations. These possess the functionality to set up
+ * an array of particles and format there info in VMD format,
+ * increment positions and velocity's, calculate the potential and kinetic energies 
+ *of a system of particles, calculate pairwise forces between particles, calculate
+ * the eccentricity and finally track the total orbits in a simulation. 
+ *
  *
  * @auther M. OSHEA
  * @auther C. JOHN
@@ -14,27 +23,27 @@ import java.io.*;
 
 
 public class Particle3d {
-
+    
     /* ******************************************
      * Properties
      ********************************************/
-
+    
     private double mass;
     private Vector3d position;
     private Vector3d velocity; 
     private String label;  
     private static double G;
-
+    
     // Setters and Getters
 
- /** Get the position of a particle.
+    /** Get the position of a particle.
      *
      * @return a Vector3d representing the position.
      */
 
     public Vector3d getPosition() { return position; }
 
- /** Get the velocity of a particle.
+    /** Get the velocity of a particle.
      *
      * @return a Vector3d representing the velocity.
      */
@@ -171,24 +180,25 @@ public class Particle3d {
      * @param force an array of vectors that stores the current force.
      * @param particles that is an array of Particle3d objects.
      */
-
-   public static void leapPosition(double dt, Vector3d[] force, Particle3d[] particles){
-
-
-    Vector3d acceleration = new Vector3d();
-
-   //Loop to cycle through all particles in array
     
-    for (int i = 0 ; i < particles.length ; i ++){
-
-    //Calculates the acceleration for each particle in the array and uses this to calculate the updated position
+    public static void leapPosition(double dt, Vector3d[] force, Particle3d[] particles){
 	
-    acceleration = force[i].scalarDivide(particles[i].getMass());
-
-    Vector3d  posI = new Vector3d(particles[i].getPosition());
-    Vector3d  velI= new Vector3d(particles[i].getVelocity());
+	//Initialise acceleration as a Vector3d and set values to zero  
+	Vector3d acceleration = new Vector3d();
 	
-   particles[i].setPosition( Vector3d.addVector(Vector3d.addVector(posI, velI.scalarMultiply(dt)), acceleration.scalarMultiply(0.5*dt*dt)));
+	//Loop to cycle through all particles in array
+	
+	for (int i = 0 ; i < particles.length ; i ++){
+	    
+	    //Calculates the acceleration for each particle in the array and uses 
+	    //this to calculate the updated position
+	    
+	    acceleration = force[i].scalarDivide(particles[i].getMass());
+	    
+	    Vector3d  posI = new Vector3d(particles[i].getPosition());
+	    Vector3d  velI= new Vector3d(particles[i].getVelocity());
+	    
+	    particles[i].setPosition( Vector3d.addVector(Vector3d.addVector(posI, velI.scalarMultiply(dt)), acceleration.scalarMultiply(0.5*dt*dt)));
    
     }
     
@@ -201,6 +211,7 @@ public class Particle3d {
     * @param dt a double that is the timestep.
     * @param force an array of vectors that stores the current force.
     * @param particles that is an array of Particle3d objects.
+    * @param forceNew an array of Vector3d objects to store updated force
     */
    
     public static void leapVelocity(double  dt, Vector3d[] force, Vector3d[] forceNew, Particle3d[] particles) {
@@ -224,14 +235,14 @@ public class Particle3d {
 
 
 
-     /** Returns the kinetic energy of a Particle3d,
+    /** Returns the kinetic energy of a Particle3d,
      * calculated as 1/2*m*v^2. Where v, is the magnitude of the
      *velocity vector . 
      *
      * @return a double that is the kinetic energy.
      */
     
-public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
+    public double kineticEnergy() { return 0.5*mass*velocity.mag()*velocity.mag();}
 
 
     
@@ -315,10 +326,12 @@ public static double kineticEnergy(Particle3d[] particles){
     public static Particle3d[] particleArray (Scanner info){
 	Particle3d[] particles = new Particle3d[info.nextInt()];
 
+	//loop to create an array of appropriate size
 	for(int i=0;i<particles.length;i++){
 	    particles[i]=new Particle3d();
 	}
 	
+	//loop to assign correct infomation to the array
 	for(int i=0;i<particles.length;i++){
 	    particles[i]=  readParticle(info);
 
@@ -414,7 +427,7 @@ public static double kineticEnergy(Particle3d[] particles){
     
     /** Method to calculate the Gravitational force between two particles
      *
-     *@param particles an array of  Particle3d objects to calculate the gravitational force of
+     *@param particles[] an array of  Particle3d objects to calculate the gravitational force of
      *
      *@return Vector3d[] array containing the Gravitational force of all particles in the system
      */
@@ -501,26 +514,26 @@ public static double kineticEnergy(Particle3d[] particles){
      */
     public static void adjustedVelocitys(Particle3d[] particles){
 	
-	
+	//initialise the total mass and center of mass as zero valued
 	double massTotal = 0.0;
-	
         Vector3d vCoM = new Vector3d();
 	
-	
+	//loop to calculate the total mass of the planets
 	for(int l=0; l<particles.length; l++){
-	    
-	    massTotal += particles[l].getMass();
+	     massTotal += particles[l].getMass();
 	}
 	
-
+	//loop to calculate velocity of the total momentum, calling it vCoM as a tempory place holder
 	for(int l=0; l<particles.length; l++){
 	    Vector3d momentum = (particles[l].getVelocity()).scalarMultiply(particles[l].getMass());
 	    vCoM = Vector3d.addVector(vCoM, momentum);
 	    
 	}
 	
+	//assign new value to the velocity of the center of mass
 	vCoM = vCoM.scalarDivide(massTotal);
 	
+	//loop to correct the initial velocity of hte planets 
 	for(int l=0; l<particles.length; l++){
 	    
 	    particles[l].setVelocity(Vector3d.subVector(particles[l].getVelocity(), vCoM));
