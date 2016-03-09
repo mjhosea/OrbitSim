@@ -212,6 +212,7 @@ public class OrbitSim {
 	    //Leap position of all particles due to current pairwise force  
       	    Particle3d.leapPosition(sizeStep, force, particles);
 	    	   
+
 	   
 	    //Loop through to save new positions for orbit tracking
 	    for(int j=0; j<particles.length; j++){
@@ -228,6 +229,8 @@ public class OrbitSim {
 	    moonOrbits+= Particle3d.moonTrac(moonInitial, moonNext, moonOrbits);
 
 
+
+
 	    //update forces based on new positions
 
 	    Vector3d[] forceNew =  Particle3d.forceCalc(particles);
@@ -239,6 +242,8 @@ public class OrbitSim {
 	    for (int j=0; j<force.length; j++){
 	    force[j] = forceNew[j]; 
 	    }
+
+
 	    
 	    //update timestep
 	    t += sizeStep;
@@ -260,7 +265,9 @@ public class OrbitSim {
     
     for(int i=0; i<particles.length; i++){
 	
-	orbitOutput.printf("%s: Perihelion= %10.5f, Aphelion= %10.5f, Orbits= %10.5f \n\n", particles[i].getLabel(), perihelion[i], aphelion[i], orbits[i]);
+	double period= orbits[i]/(numStep*sizeStep);
+
+	    orbitOutput.printf("%s: Perihelion= %10.5f, Aphelion= %10.5f, Orbits= %10.5f, Orbital Period= %10.5f \n\n", particles[i].getLabel(), perihelion[i], aphelion[i], orbits[i], period);
 	
 	
     }

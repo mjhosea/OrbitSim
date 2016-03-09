@@ -1,12 +1,12 @@
 /**
  * Particle3D class.
  *
- * This class utilises the properties of Vectror3d class
+ * This class utilises the properties of Vector3d class
  * in order to create arrays of particles. Contained within the class are numerous
  * methods to carry out calculations. These possess the functionality to set up
  * an array of particles and format there info in VMD format,
- * increment positions and velocity's, calculate the potential and kinetic energies 
- *of a system of particles, calculate pairwise forces between particles, calculate
+ * time-integrate positions and velocity's, calculate the potential and kinetic energies 
+ *of a system of particles, calculate pairwise Gravitational forces between particles, calculate
  * the eccentricity and finally track the total orbits in a simulation. 
  *
  *
@@ -75,7 +75,7 @@ public class Particle3d {
 
     /** Set the value of G
      *
-     *
+     *@param val a double to set the value of G to.
      */
 
     public static void setG(double val){ G=val;} 
@@ -372,11 +372,13 @@ public static double kineticEnergy(Particle3d[] particles){
 
     public static void toVMD(Particle3d[] particles, PrintWriter outfile, double currentStep) {
 	
-      
+	//print number of particles
 	outfile.printf("%d\n" ,particles.length);
 
+	//print current time step
 	outfile.printf("Point = %10.5f \n" , currentStep);
 	
+	//print particle infor
 	for (int i=0; i < particles.length; i++) {
        
 	    outfile.printf("%s\n", particles[i].toString());
@@ -493,6 +495,7 @@ public static double kineticEnergy(Particle3d[] particles){
 	for(int j=0; j<particles.length; j++){
 	    double separation=seperation(particles[j], particles[0]).mag();
 	    
+	    //statements to determine whether value should be saved
 	    if(separation<perihelion[j]){
 		perihelion[j]= separation;
 	    }
