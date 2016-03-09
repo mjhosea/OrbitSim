@@ -68,7 +68,6 @@ public class OrbitSim {
 
     // We are using file IO so we are throwing an exception
 
-
     public static void main (String[] argv) throws IOException{
 
 
@@ -83,28 +82,28 @@ public class OrbitSim {
 
 
 
-	//create reader for initial states of particles
+	//Create reader for initial states of particles
 	BufferedReader particleInfo = new BufferedReader(new FileReader(argv[0]));
 
-	//create scanner from reader for initial states of particles
+	//Create scanner from reader for initial states of particles
 	Scanner particleScan= new Scanner(particleInfo);
 
-	// create array of particles from scanner object
+	//Create array of particles from scanner object
 	Particle3d[] particles = Particle3d.particleArray(particleScan);
 
-	//create reader for parameter file
+	//Create reader for parameter file
 	BufferedReader parameterRead = new BufferedReader(new FileReader(argv[1]));
 
-	//create scanner from reader for parameter file
+	//Create scanner from reader for parameter file
 	Scanner parameterScan= new Scanner(parameterRead);
 
-	//create writer for VMD output
+	//Create writer for VMD output
         PrintWriter positionOutput = new PrintWriter(new FileWriter(argv[2]));
 
-	//create writer for energy output
+	//Create writer for energy output
 	PrintWriter energyOutput = new PrintWriter(new FileWriter(argv[3]));
 
-	//create writer for orbit count and eccentricities
+	//Create writer for orbit count and eccentricities
 	PrintWriter orbitOutput = new PrintWriter(new FileWriter(argv[4]));
    
 
@@ -119,7 +118,7 @@ public class OrbitSim {
 	 */
 
 	
-	//save parameters from scanner object to global variables
+	//Save parameters from scanner object to global variables
 	double numStep= parameterScan.nextDouble();
 	double sizeStep= parameterScan.nextDouble();
 	double G= parameterScan.nextDouble();
@@ -130,14 +129,14 @@ public class OrbitSim {
 	//Initial time
 	double t=0.0;
 
-	//create an array of doubles to track aphelions and parahelions
+	//Create an array of doubles to track aphelions and parahelions
 	double[] aphelion= new double[particles.length];
 	double[] perihelion= new double[particles.length];
 
-	//create a double array to track orbits
+	//Create a double array to track orbits
 	double[] orbits = new double[particles.length];
 
-	//create Vector array of initial positions for orbit tracking
+	//Create Vector array of initial positions for orbit tracking
 	Vector3d[] posInitial= new Vector3d[particles.length];
 
 	//Create array of position vectors to hold new positions
@@ -147,10 +146,10 @@ public class OrbitSim {
 	//Create vector for initial separation between Earth and moon
 	Vector3d moonInitial= new Vector3d(Vector3d.subVector(Particle3d.seperation(particles[1],particles[2]),particles[1].getPosition()));
 	
-	//set-up Vector3d object to hold next seperation between Earth and moon
+	//Set-up Vector3d object to hold next seperation between Earth and moon
 	Vector3d moonNext= new Vector3d();
 
-	//create double to track moon orbits around Earth
+	//Create double to track moon orbits around Earth
 	double moonOrbits= 0.0;
 	
 					   
@@ -182,15 +181,16 @@ public class OrbitSim {
 
        
 
-	//calculate Initial vCoM
+	//Calculate Initial vCoM
 	Vector3d vCoM = new Vector3d();
 
-	//initialize total mass
+	//Initialize total mass
 	double massTotal = 0.0;
 
 
 
-	//Adjusting initial velocities of all bodies
+	//Adjusting initial velocities of all bodies, such that the CoM
+	//remains stationary
 
 	Particle3d.adjustedVelocitys(particles);
 
@@ -228,28 +228,28 @@ public class OrbitSim {
 	    moonOrbits+= Particle3d.moonTrac(moonInitial, moonNext, moonOrbits);
 
 
-	    //update forces based on new positions
+	    //Update forces based on new positions
 
 	    Vector3d[] forceNew =  Particle3d.forceCalc(particles);
 	 
-	    //update velocity based on average of current and new force
+	    //Update velocity based on average of current and new force
 	    Particle3d.leapVelocity(sizeStep, force, forceNew, particles);
 
-	    //set force array to new forces
+	    //Set force array to new forces
 	    for (int j=0; j<force.length; j++){
 	    force[j] = forceNew[j]; 
 	    }
 	    
-	    //update timestep
+	    //Update timestep
 	    t += sizeStep;
 
-	    //print particle positions
+	    //Print particle positions
 	    Particle3d.toVMD(particles, positionOutput,t);
 
-	    //calculate total energy
+	    //Calculate total energy
 	     totalE= Particle3d.potentialEnergy(particles) + Particle3d.kineticEnergy(particles);
 	    
-	    //print energy output
+	    //Print energy output
 	     energyOutput.printf("%10.5f %10.5f \n", t, totalE);
 
 	}
@@ -267,7 +267,7 @@ public class OrbitSim {
 
     //Print number of orbits of moon around Earth to same file
     orbitOutput.printf("Orbits of the moon around Earth: %10.5f \n", moonOrbits);
-
+    
     //Close the output streams
     energyOutput.close();
     positionOutput.close();
