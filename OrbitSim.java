@@ -20,8 +20,10 @@
  *
  * Repeat this sequence for all desired particles in the system.
  *
- * IMPORTANT NOTE: The Sun needs to be the first particle in the initial input file. Earth's 
- * moon needs to be the second.
+ * IMPORTANT NOTE: The Sun needs to be located at the origin in this input file.
+ * The Earth must be the second  particle input.
+ * Earth's moon must be the third particle input.
+ * 
  *
  * The second command line argument is the file name correlating to the parameters of the system. These
  * should be in the following sequence:
@@ -136,17 +138,36 @@ public class OrbitSim {
 	double[] perihelion= new double[particles.length];
 
 	//create a double array to track orbits
-	double[] count = new double[particles.length];	
+	double[] orbits = new double[particles.length];
 
-	//create a double array for initial gradients
-	double[] grad= Particle3d.gradientCalc(particles);
+	//create Vector array of initial positions for orbit tracking
+	Vector3d[] posInitial= new Vector3d[particles.length];
 
-	//initialize double arrays
+	//Create array of position vectors to hold new positions
+	Vector3d[] posNext= new Vector3d[particles.length];
+
+
+	//Create vector for initial separation between Earth and moon
+	Vector3d moonInitial= new Vector3d(Vector3d.subVector(Particle3d.seperation(particles[1],particles[2]),particles[1].getPosition()));
+	
+	//set-up Vector3d object to hold next seperation between Earth and moon
+	Vector3d moonNext= new Vector3d();
+
+	//create double to track moon orbits around Earth
+	double moonOrbits= 0.0;
+	
+					   
+
+
+	//initialize  arrays
 	for(int i=0;i<particles.length;i++){
 	    aphelion[i]= 0.0;
 	    perihelion[i]= 100000000;
-	    count[i]=0;
+	    orbits[i]=0;
+	    posInitial[i]= particles[i].getPosition();
+	    posNext[i]= new Vector3d();
 	}
+
 
 	//Initial energies
 	double totalE= Particle3d.potentialEnergy(particles) + Particle3d.kineticEnergy(particles);
@@ -193,11 +214,29 @@ public class OrbitSim {
 	    //test for eccentricities
 	    Particle3d.eccentric(perihelion, aphelion, particles);
 
+
 	    //Leap position of all particles due to current pairwise force
 
       	    Particle3d.leapPosition(sizeStep, force, particles);
 		
 	   
+	   
+	    //Loop through to save new positions for orbit tracking
+	    for(int j=0; j<particles.length; j++){
+		posNext[j]= particles[j].getPosition();
+	    }
+	    
+	    //Track orbits
+	    Particle3d.orbitTrac(posInitial, posNext, orbits);
+	    
+	    //Calculate new separation between Earth and moon with corrected
+	    moonNext=Vector3d.subVector(Particle3d.seperation(particles[1],particles[2]),particles[1].getPosition());
+
+	    //Track orbits of moon around Earth
+	    moonOrbits+= Particle3d.moonTrac(moonInitial, moonNext, moonOrbits);
+
+
+
 	    //update forces based on new positions
 
 	    Vector3d[] forceNew =  Particle3d.forceCalc(particles);
@@ -208,7 +247,6 @@ public class OrbitSim {
 	    //set force array to new forces
 	    for (int j=0; j<force.length; j++){
 	    force[j] = forceNew[j]; 
-
 	    }
 
 	    //update timestep
@@ -222,26 +260,23 @@ public class OrbitSim {
 	    
 	    //print energy output
 	     energyOutput.printf("%10.5f %10.5f \n", t, totalE);
-	     
-	     //track orbits
-	     Particle3d.orbitTrack(particles, count, grad);
 
 	}
 	
-    
-    
     
     
     //Loop to print orbit info
     
     for(int i=0; i<particles.length; i++){
 	
-	orbitOutput.printf("%s : Perihelion= %10.5f, Aphelion=%10.5f, Orbits=%10.5f \n", particles[i].getLabel(), perihelion[i], aphelion[i], count[i]);
+	orbitOutput.printf("%s: Perihelion= %10.5f, Aphelion= %10.5f, Orbits= %10.5f \n\n", particles[i].getLabel(), perihelion[i], aphelion[i], orbits[i]);
 	
 	
     }
-    
-	
+
+    //Print number of orbits of moon around Earth to same file
+    orbitOutput.printf("Orbits of the moon around Earth: %10.5f \n", moonOrbits);
+
     //Close the output streams
     energyOutput.close();
     positionOutput.close();

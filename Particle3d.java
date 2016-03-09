@@ -462,62 +462,6 @@ public static double kineticEnergy(Particle3d[] particles){
 
 
     }
-    
-
-public static double[] gradientCalc(Particle3d[] particles){
-
-    double ySun = particles[0].getPosition().getY();
-    double xSun = particles[0].getPosition().getX();
-    
-    double yPlanet= 0;
-    double xPlanet = 0;
-    double[] grad = new double[particles.length];
-    
-    for(int i=0; i<particles.length; i++){	 
-	 grad[i]= 0;
-     }
-
-
-    for(int i = 0; i < particles.length ; i ++){
-    
-    yPlanet = particles[i].getPosition().getY();
-    xPlanet = particles[i].getPosition().getX();
-
-    grad[i] = ((yPlanet-ySun)/(xPlanet-xSun));
-
-    }
-    return (grad);
-
-}
-
-
-    public static void orbitTrack(Particle3d[] particles, double[] count, double[] grad){
-
-
-	//creates an array of doubles for the new gradient after leap position 
-	double[] gradNew = gradientCalc(particles);
-
-	//Loop to determine increment increase of orbit track
-	for(int l=0; l< particles.length; l++){
-	    
-
-	    // if statment that adds 0.25 onto the orbit count if orbiting planet moves into new quadrent 
-	    if(gradNew[l]/Math.abs(gradNew[l]) == (-1)* grad[l]/Math.abs(grad[l])){
-		
-		count[l]+= 0.25;
-		
-		grad[l]=gradNew[l];
-		
-	    }
-
-	}
-    }
-
-
-    
-
-
-
 
 
     /**Method to calculate Aphelion and Perihelion of planetary orbits.
@@ -586,4 +530,87 @@ public static double[] gradientCalc(Particle3d[] particles){
     }
     
     
+
+
+
+
+
+/**Method to track the orbits of bodies in the system with respect to the Sun (at the origin).
+ *
+ *
+ *
+ *
+ *@param posInitial array of Vector3d objects containing the current positions of bodies.
+ *@param posNext array of Vector3d objects containing the next positions of the bodies.
+ *@param orbits array of doubles indicating the number of orbits undergone by the bodies.
+ *
+ */
+    
+    public static void orbitTrac(Vector3d[] posInitial, Vector3d[] posNext, double[] orbits){
+			     
+	//Loop to perform tracking for all particles in system
+	for(int i=0; i<posInitial.length; i++){
+
+	    //Calculate dot product of current and next positions for given body
+	    double numerator= Vector3d.dot(posInitial[i], posNext[i]);
+	    
+	    double argument= numerator/(posInitial[i].mag()*posNext[i].mag());
+	    
+	    //Calculate angle between initial and next position in radians
+	    double orbitRad= Math.acos(argument);
+	    
+	    //convert angle to ratio of a full orbit and increment onto previous saves
+	    orbits[i]+= orbitRad/(2*Math.PI);
+
+	    //set new position to current
+	    posInitial[i]=posNext[i];
+	}
+    
+    
+    
+    }
+
+
+/**Method to track the orbits of the moon around the Earth
+ *
+ *
+ *
+ *
+ *@param moonInitial a Vector3d object thats the current position of the moon w.r.t. the Earth
+ *@param moonNext a Vector3d object thats the next position of the moon w.r.t. the Earth
+ *@param moonOrbits a double to track the number of orbits undergone by the moon
+ *
+ */
+    
+    public static double moonTrac(Vector3d moonInitial, Vector3d moonNext, double moonOrbits){
+			     
+
+	    //Calculate dot product of current and next positions for given body
+	    double numerator= Vector3d.dot(moonInitial, moonNext);
+	    
+	    double argument= numerator/(moonInitial.mag()*moonNext.mag());
+	    
+	    //Calculate angle between initial and next position in radians
+	    double orbitRad= Math.acos(argument);
+	    
+	    //convert angle to ratio of a full orbit and save
+	    moonOrbits= orbitRad/(2*Math.PI);
+
+	    //set new position to current
+	    moonInitial=moonNext;
+
+
+	    return moonOrbits;
+    }
 }
+
+
+
+
+
+
+
+
+
+    
+
